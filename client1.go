@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"k8s.io/api/apps/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -15,7 +15,7 @@ func main() {
 	config := ctrl.GetConfigOrDie()
 	clientset := kubernetes.NewForConfigOrDie(config)
 
-	namespace := "default"
+	namespace := "kasten-io"
 	items, err := GetDeployments(clientset, ctx, namespace)
 	if err != nil {
 		fmt.Println(err)

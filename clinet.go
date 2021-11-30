@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+        metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"github.com/itchyny/gojq"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+        schema "k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/dynamic"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -73,4 +75,23 @@ func GetResourcesByJq(dynamic dynamic.Interface, ctx context.Context, group stri
 		}
 	}
 	return resources, nil
+}
+
+func GetResourcesDynamically(dynamic dynamic.Interface, ctx context.Context,
+	group string, version string, resource string, namespace string) (
+	[]unstructured.Unstructured, error) {
+
+	resourceId := schema.GroupVersionResource{
+		Group:    group,
+		Version:  version,
+		Resource: resource,
+	}
+	list, err := dynamic.Resource(resourceId).Namespace(namespace).
+		List(ctx, metav1.ListOptions{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return list.Items, nil
 }
